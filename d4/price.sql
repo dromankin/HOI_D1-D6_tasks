@@ -17,7 +17,11 @@ INSERT INTO pricing_rules (route_no, fare_conditions, base_price, min_price, max
 SELECT 
     r.route_no, 
     s.fare_conditions,
-    percentile_cont(0.5) WITHIN GROUP (ORDER BY s.price / (EXTRACT(EPOCH FROM r.duration) / 60)) AS base_price,
+    CASE s.fare_conditions
+        WHEN 'Economy' THEN 50
+        WHEN 'Comfort' THEN 65
+        WHEN 'Business' THEN 100
+    END AS base_price,
     MIN(s.price) AS min_price,
     MAX(s.price) AS max_price,
     COUNT(*) AS sample_count
