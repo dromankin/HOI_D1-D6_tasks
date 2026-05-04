@@ -1,0 +1,35 @@
+http://127.0.0.1:3000/routes?from=Paris&to=LED&date=2025-12-31&connections=9&bookingClass=Economy
+http://127.0.0.1:3000/routes?from=Moscow&to=LED&date=2025-12-31&connections=3&bookingClass=Economy
+http://127.0.0.1:3000/cities
+http://127.0.0.1:3000/airports
+http://127.0.0.1:3000/cities/Moscow/airports
+http://127.0.0.1:3000/airports/SVO/inbound
+http://127.0.0.1:3000/airports/SVO/outbound
+
+http://localhost:3000/bookings
+{
+  "passenger_id": "1234 567890",
+  "passenger_name": "IVAN IVANOV",
+  "fare_condition": "Economy",
+  "outbound": true,
+  "segments": [
+    {
+      "routeNo": "PG0370",
+      "departureAirportCode": "OVB",
+      "arrivalAirportCode": "SVO",
+      "departureTime": "2025-12-30 15:35:00+00"
+    },
+    {
+      "routeNo": "PG0106",
+      "departureAirportCode": "SVO",
+      "arrivalAirportCode": "LED",
+      "departureTime": "2025-12-31 23:40:00+00"
+    }
+  ]
+}
+
+http://localhost:3000/check-in
+
+{
+    "ticket_no": "0005436011444"
+}

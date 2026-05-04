@@ -1,0 +1,32 @@
+erDiagram
+    PERSON {
+        string id PK "XSD:ID"
+        string name "Regex: \w+ \w+"
+        string gender "M|F|other"
+        int children_count "Required"
+        int siblings_count "Required"
+    }
+
+    PERSON ||--o| SPOUSE_LINK : "has_spouse"
+    SPOUSE_LINK {
+        string person_id FK "-> PERSON.id"
+        string ref_id FK "IDREF -> PERSON.id"
+    }
+
+    PERSON ||--o{ PARENT_LINK : "has_parents"
+    PARENT_LINK {
+        string child_id FK "-> PERSON.id"
+        string ref_id FK "IDREF -> PERSON.id (max 2)"
+    }
+
+    PERSON ||--o{ CHILD_LINK : "has_children"
+    CHILD_LINK {
+        string parent_id FK "-> PERSON.id"
+        string ref_id FK "IDREF -> PERSON.id"
+    }
+
+    PERSON ||--o{ SIBLING_LINK : "has_siblings"
+    SIBLING_LINK {
+        string person_id FK "-> PERSON.id"
+        string ref_id FK "IDREF -> PERSON.id"
+    }

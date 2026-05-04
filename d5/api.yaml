@@ -1,0 +1,197 @@
+openapi: 3.0.0
+info:
+  title: D6
+  description: D6 HOI task api
+  version: 1.0.0
+
+paths:
+
+  # --- CITIES ---
+  /cities:
+    get:
+      tags: [Location]
+      summary: Получить список всех городов
+      responses:
+        200:
+          description: Список городов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /cities/{city}/airports:
+    get:
+      tags: [Location]
+      summary: Получить аэропорты в конкретном городе
+      parameters:
+        - name: city
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Список аэропортов города
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+
+  # --- AIRPORTS ---
+  /airports:
+    get:
+      tags: [Location]
+      summary: Получить список всех аэропортов
+      responses:
+        200:
+          description: Код, название и город каждого аэропорта
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /airports/{code}/inbound:
+    get:
+      tags: [Location]
+      summary: Прилетающие рейсы в аэропорт
+      parameters:
+        - name: code
+          in: path
+          required: true
+          description: Код аэропорта (например, SVO)
+          schema:
+            type: string
+      responses:
+        200:
+          description: Список входящих маршрутов
+
+  /airports/{code}/outbound:
+    get:
+      tags: [Location]
+      summary: Вылетающие рейсы из аэропорта
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Список исходящих маршрутов
+
+  # --- ROUTES (SEARCH) ---
+  /routes:
+    get:
+      tags: [Search]
+      summary: Поиск маршрутов
+      parameters:
+        - name: from
+          in: query
+          required: true
+          description: Город или код аэропорта вылета
+          schema:
+            type: string
+        - name: to
+          in: query
+          required: true
+          description: Город или код аэропорта прилета
+          schema:
+            type: string
+        - name: date
+          in: query
+          required: true
+          description: Дата вылета (YYYY-MM-DD)
+          schema:
+            type: string
+        - name: connections
+          in: query
+          required: false
+          description: Макс. число пересадок (или "unbound")
+          schema:
+            type: string
+            default: "0"
+        - name: bookingClass
+          in: query
+          required: false
+          description: Класс обслуживания
+          schema:
+            type: string
+            enum: [economy, comfort, business]
+      responses:
+        200:
+          description: Список найденных вариантов перелета
+
+  # --- BOOKINGS ---
+  /bookings:
+    post:
+      tags: [Booking]
+      summary: Создать бронирование и билет
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                passenger_id:
+                  type: string
+                  example: "1234 567890"
+                passenger_name:
+                  type: string
+                  example: "IVAN IVANOV"
+                fare_condition:
+                  type: string
+                  enum: [Economy, Comfort, Business]
+                  default: Economy
+                outbound:
+                  type: boolean
+                  default: true
+                segments:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      routeNo:
+                        type: string
+                      departureAirportCode:
+                        type: string
+                      arrivalAirportCode:
+                        type: string
+                      departureTime:
+                        type: string
+                        format: date-time
+      responses:
+        201:
+          description: Бронирование создано
+        400:
+          description: Ошибка в данных
+
+  # --- CHECK-IN ---
+  /check-in:
+    post:
+      tags: [Check-in]
+      summary: Онлайн-регистрация (выбор места)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ticket_no:
+                  type: string
+                  example: "0005431234567"
+      responses:
+        201:
+          description: Успешная регистрация (возвращает посадочные)
+        200:
+          description: Билет уже был зарегистрирован
+        400:
+          description: Не указан номер билета
