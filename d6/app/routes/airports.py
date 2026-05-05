@@ -14,10 +14,14 @@ def airports():
     """)
 
     rows = cur.fetchall()
+    result = [
+        {"airport_code": r[0], "airport_name": r[1], "city": r[2]} 
+        for r in rows
+    ]
     cur.close()
     conn.close()
 
-    return jsonify(rows)
+    return jsonify(result)
 
 
 @airports_bp.route("/airports/<code>/inbound")
@@ -44,10 +48,16 @@ order by r.route_no;
     """, (code,))
 
     rows = cur.fetchall()
+    result = [
+        {
+            "route_no": r[0], "days_of_week": r[1], "scheduled_time": r[2],
+            "origin_airport": r[3], "origin_name": r[4], "origin_city": r[5], "origin_country": r[6]
+        } for r in rows
+    ]
     cur.close()
     conn.close()
 
-    return jsonify(rows)
+    return jsonify(result)
 
 
 @airports_bp.route("/airports/<code>/outbound")
@@ -75,7 +85,13 @@ order by r.route_no;
 
 
     rows = cur.fetchall()
+    result = [
+        {
+            "route_no": r[0], "days_of_week": r[1], "scheduled_time": r[2],
+            "origin_airport": r[3], "origin_name": r[4], "origin_city": r[5], "origin_country": r[6]
+        } for r in rows
+    ]
     cur.close()
     conn.close()
 
-    return jsonify(rows)
+    return jsonify(result)

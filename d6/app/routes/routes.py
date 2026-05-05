@@ -145,13 +145,17 @@ def routes():
 
         
         cur.execute("""
-            SELECT 
-                f.flight_id, f.route_no, r.departure_airport, r.arrival_airport, 
-                f.scheduled_departure, f.scheduled_arrival
-            FROM flights f
-            JOIN routes r ON r.route_no = f.route_no
-            WHERE f.flight_id = ANY(%s)
-            ORDER BY array_position(%s, f.flight_id)
+            SELECT * FROM (
+                SELECT DISTINCT ON (f.flight_id)
+                    f.flight_id, f.route_no, r.departure_airport, r.arrival_airport, 
+                    f.scheduled_departure, f.scheduled_arrival
+                FROM flights f
+                JOIN routes r ON r.route_no = f.route_no
+                WHERE f.flight_id = ANY(%s)
+                  AND f.scheduled_departure <@ r.validity
+                ORDER BY f.flight_id
+            ) sub
+            ORDER BY array_position(%s, sub.flight_id)
         """, (flight_ids, flight_ids))
         
         segments = [

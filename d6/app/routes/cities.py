@@ -32,7 +32,12 @@ def airports_in_city(city):
     """, (city,))
 
     rows = cur.fetchall()
+    result = [
+        {
+            "airport_code": r[0], "airport_name": r[1]
+        } for r in rows
+    ]
     cur.close()
     conn.close()
 
-    return jsonify(rows)
+    return jsonify(result)
